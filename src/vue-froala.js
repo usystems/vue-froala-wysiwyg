@@ -99,8 +99,6 @@ export default (Vue, Options = {}) => {
 
         this._editor = new FroalaEditor(this.$el, this.currentConfig)
 
-        this.editorInitialized = true;
-
       },
 
        // Return clone object 
@@ -181,12 +179,15 @@ export default (Vue, Options = {}) => {
           // Fix for https://github.com/froala/vue-froala-wysiwyg/issues/135
           if (self._editor === null) return;
 
-          self._editor.html.set(self.model || '');
+          if (self._editor.html != undefined)
+            self._editor.html.set(self.model || '');
 
           //This will reset the undo stack everytime the model changes externally. Can we fix this?
 
-          self._editor.undo.saveStep();
-          self._editor.undo.reset();
+          if (self._editor.undo != undefined) {
+            self._editor.undo.saveStep();
+            self._editor.undo.reset();
+          }
 
         }
 
@@ -223,6 +224,7 @@ export default (Vue, Options = {}) => {
 
         if (this._editor) {
 
+          this.initEvents = [];
           this._editor.destroy();
           this.editorInitialized = false;
           this._editor = null;
@@ -282,7 +284,10 @@ export default (Vue, Options = {}) => {
         var self = this;
 
         this.registerEvent('initialized', function () {
-          if (self._editor.events) {
+
+          this.editorInitialized = true;
+
+          if (self._editor != null && self._editor.events) {
             // bind contentChange and keyup event to froalaModel
             self._editor.events.on('contentChanged', function () {
               self.updateModel();
