@@ -178,6 +178,9 @@ export default (Vue, Options = {}) => {
 
         function htmlSet() {
 
+          // Fix for https://github.com/froala/vue-froala-wysiwyg/issues/135
+          if (self._editor === null) return;
+
           self._editor.html.set(self.model || '');
 
           //This will reset the undo stack everytime the model changes externally. Can we fix this?
